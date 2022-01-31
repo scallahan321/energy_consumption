@@ -1,0 +1,6 @@
+.DS_Store
+.energyvenv
+.energy.code-workspace
+.env
+.ipynb_checkpoints
+test.py
