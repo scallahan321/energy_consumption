@@ -58,9 +58,11 @@ app.layout = html.Div(children=[
 )
 
 def update_state(selected_state,selected_resources): 
-    #checked = selected_resources
+    #a view from the db will be queried every time the dropdown selection changes
     query = sqlalchemy.text(f'SELECT * FROM {selected_state}')
+    #read query into pandas dataframe
     df = pd.read_sql(query,conn)
+    #boolean condition for indexing df based on the resources checked by user
     criterion = df['resource_id'].map(lambda x: x in selected_resources)
     fig = px.line(df.loc[criterion], x="year", y="consumption", color="resource_id",line_group="resource_id")
     return fig
