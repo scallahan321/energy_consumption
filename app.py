@@ -36,25 +36,39 @@ app.layout = html.Div(children=[
     '''),
     dcc.Dropdown(
         id = 'state_dropdown',
-        options=[
+        options = [
         {'label': i, 'value': i} for i in state_data['state']] ,
-        value='Alabama'
+        value = 'Alabama'
     ),
 
     dcc.Checklist(
         id = 'resource_checklist',
-        options=[ {'label': i,'value':j} for i, j in zip(resource_names, resource_abrevs)],
-        value=['CL']
+        options = [{'label': i,'value':j} for i, j in zip(resource_names, resource_abrevs)],
+        value = ['CL']
     ),
 
     dcc.Graph(
-        id='graph-1'
+        id = 'line_chart'
+    ),
+
+    dcc.Dropdown(
+        id = 'map_dropdown',
+        options = [{'label': i,'value':j} for i, j in zip(resource_names, resource_abrevs)],
+        value = ['CL']
+    ),
+
+    dcc.Slider(id='year_slider', value=1960, min=1960, max=2019, step=1),
+    
+    dcc.Graph(
+        id= 'geo_chart'
     )
+
 ])
+
 @app.callback(
-    Output(component_id='graph-1',component_property='figure'),
-    Input(component_id='state_dropdown',component_property='value'),
-    Input(component_id ='resource_checklist',component_property='value')
+    Output(component_id='line_chart', component_property='figure'),
+    Input(component_id='state_dropdown', component_property='value'),
+    Input(component_id ='resource_checklist', component_property='value')
 )
 
 def update_state(selected_state,selected_resources): 
@@ -66,6 +80,14 @@ def update_state(selected_state,selected_resources):
     criterion = df['resource_id'].map(lambda x: x in selected_resources)
     fig = px.line(df.loc[criterion], x="year", y="consumption", color="resource_id",line_group="resource_id")
     return fig
+
+@app.callback(
+    Output(component_id ='geo_chart', component_property = 'figure'),
+    Input(component_id = 'year_slider',)
+)
+
+def update_map():
+    print('hi')
 
 if __name__ == '__main__':
     
