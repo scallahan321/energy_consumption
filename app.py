@@ -5,10 +5,11 @@ import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
 import pymysql
-import sqlalchemy
 import os
 from dotenv import load_dotenv
 import json
+
+#testing
 
 
 load_dotenv()
@@ -23,10 +24,6 @@ state_data = pd.read_csv("state_data.csv")
 #resource names and abbreviations
 resource_abrevs = ['CL','NG','PA','SO','WY','BM','HY','NU']
 resource_names = ['Coal','Natural Gas','Petroleum','Solar','Wind','Biomass','Hydroelectricity','Nuclear']
-
-# To connect MySQL database
-#engine = sqlalchemy.create_engine(f"mysql+pymysql://{db_user}:{db_password}@{db}/energy")
-#conn = engine.connect()
 
 conn1 = pymysql.connect(
         host = db,
@@ -69,6 +66,9 @@ app.layout = html.Div(children=[
         value = ['CL'],
         style = {'display':'flex', 'justify-content':'center'}
     ),
+    
+    html.Br(),
+
     dcc.Graph(
         id = 'line_chart'
     )
@@ -84,7 +84,7 @@ app.layout = html.Div(children=[
 
     html.Br(),
 
-    dcc.Slider(id = 'year_slider', value = 1960, min = 1960, max = 2019, step = 1, tooltip = { 'placement':'bottom', 'always_visible':True}),
+    dcc.Slider(id = 'year_slider', value = 1960, min = 1960, max = 2019, step = 1, marks = None, tooltip = { 'placement':'bottom', 'always_visible':True}),
 
     dcc.Graph(
         id= 'geo_chart'
@@ -101,11 +101,6 @@ app.layout = html.Div(children=[
 )
 
 def update_state(selected_state,selected_resources): 
-    #a view from the db will be queried every time the dropdown selection changes
-    #query = sqlalchemy.text(f'SELECT * FROM {selected_state}')
-    #read query into pandas dataframe
-    #df = pd.read_sql(query, conn)
-    #boolean condition for indexing df based on the resources checked by user
     query = f'SELECT * FROM {selected_state}'
     cur1.execute(query)
     data = cur1.fetchall()
@@ -123,10 +118,6 @@ def update_state(selected_state,selected_resources):
 )
 
 def update_map(resource, year):
-    #query to grab all the data from facts table for corresponding resource
-    #query = sqlalchemy.text(f'SELECT * FROM facts WHERE resource_id = "{selected_resource}"')
-    #read query into pandas dataframe
-    #df = pd.read_sql(query, conn)
     query = f'SELECT * FROM facts WHERE resource_id = "{resource}"'
     cur2.execute(query)
     data = cur2.fetchall()
