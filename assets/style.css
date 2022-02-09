@@ -1,0 +1,9 @@
+input {
+    border:1px solid black;
+    box-shadow: 0 0 1px #295585;
+}
+
+.drop {
+    width:96%;
+    margin:auto;
+}

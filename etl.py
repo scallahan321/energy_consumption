@@ -13,7 +13,6 @@ db = os.environ.get('DB_ENDPOINT')
 db_user = os.environ.get('DB_USERNAME')
 db_password = os.environ.get("DB_PASSWORD")
 
-
 mydb = mysql.connector.connect(
   host=db,
   user=db_user,
@@ -47,6 +46,7 @@ cur.execute(add_fk_resource)
 page = pd.read_html("https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States")
 table = page[1]
 state_data = table.iloc[:, np.r_[0:2, 6:7]]
+state_data.to_csv("state_data.csv")
 
 #some of the state names have extra character "D", needs to be removed
 states = state_data.iloc[:,0].apply(lambda x: x.replace("[D]","")).tolist()
@@ -55,9 +55,9 @@ state_abrevs = state_data.iloc[:,1].tolist()
 ###state sq miles
 area = state_data.iloc[:,2].tolist()
 
-
 #Census population data - *****the code scraping this is in the explore file*****
 pop = pd.read_csv("population.csv")
+
 #reshaping for easier lookup by state abbreviation
 pop = pop.set_index('State')
 pop = pop.drop(index=['District of Columbia','Puerto Rico'])
@@ -66,7 +66,6 @@ pop.insert(0, 'States', state_abrevs)
 pop = pop.set_index('States')
 
 #Abbreviations used by the API for coal, natural gas, petroleum, solar, wind, biomass, hydro, nuclear
-
 resource_abrevs = ['CL','NG','PA','SO','WY','BM','HY','NU']
 resource_names = ['Coal','Natural Gas','Petroleum','Solar','Wind','Biomass','Hydroelectricity','Nuclear']
 
@@ -104,25 +103,19 @@ def call_api(state,resource):
     else:
         print("Error: " + request.status_code + f" for {state} {resource}")
 
-#this stuff should run after __if__main.
-
 #insert data into state table
 state_df = pd.DataFrame({'state_id':state_abrevs, 'state_name': states, 'area': area})
-
 state_df.to_csv('state_table.csv',header=False,index=False)
 state_table = csv.reader(open("state_table.csv"))
 for row in state_table:
     cur.execute("INSERT INTO state_dim(state_id,state_name,area) VALUES(%s,%s,%s)",row)
-    
 mydb.commit()
 
 resource_df = pd.DataFrame({'resource_id':resource_abrevs,'resource_name':resource_names,'unit_measurement':'BTU'})
-
 resource_df.to_csv('resource_table.csv',header=False,index=False)
 resource_table = csv.reader(open("resource_table.csv"))
 for row in resource_table:
     cur.execute("INSERT INTO resource_dim(resource_id,resource_name,unit_measurement) VALUES(%s,%s,%s)",row)
-
 mydb.commit()
 
 #insert data into facts
@@ -130,7 +123,6 @@ for r in resource_abrevs:
     df = call_api(state_abrevs[0],r)
     for s in state_abrevs[1:]:
         df = pd.concat([df, call_api(s,r)]) 
-    
     df.to_csv(f"{r}_data.csv",header=False,index=False)
     csv_data = csv.reader(open(f"{r}_data.csv"))
     for row in csv_data:
