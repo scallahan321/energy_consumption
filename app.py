@@ -9,11 +9,6 @@ import os
 from dotenv import load_dotenv
 import json
 
-#testing
-#testing more
-
-hi = 'hi'
-
 load_dotenv()
 
 db = os.environ.get('DB')
@@ -43,16 +38,23 @@ conn2 = pymysql.connect(
         )
 cur2 = conn2.cursor()
 
-app = dash.Dash(__name__)
+colors = {
+    'background': '#fcfdff',
+    'text': '#edf7ff'
+}
+
+app = dash.Dash(__name__ , meta_tags=[{"name":"viewport","content":"width=device-width","initial-scale":"1"}])
+        
 
 app.layout = html.Div(children=[
     html.H1(style = {'text-align':'center'}, children = 'Energy Consumption'),
 
     html.Br(),
-   
-    html.Div(id = 'chart_container', style = {'display':'flex', 'width':'100%'}, children = [
+    html.Br(),
 
-    html.Div(id = 'line_chart_container', style = {'flex':'2'}, children = [
+    html.Div(id = 'input_container', children = [
+
+    html.Div(id = 'line_input', children = [
     
     dcc.Dropdown(
         id = 'state_dropdown',
@@ -61,21 +63,15 @@ app.layout = html.Div(children=[
         value = 'Alabama'
     ),
     html.Br(),
-
+    
     dcc.Checklist(
         id = 'resource_checklist',
         options = [{'label': i,'value':j} for i, j in zip(resource_names, resource_abrevs)],
-        value = ['CL'],
-        style = {'display':'flex', 'justify-content':'center'}
-    ),
-    
-    html.Br(),
-
-    dcc.Graph(
-        id = 'line_chart'
+        value = ['CL']
     )
     ]),
-    html.Div(id = 'map_chart_container', style = {'flex':'2'}, children = [
+
+    html.Div(id = 'map_input', children = [
         
     dcc.Dropdown(
         id = 'map_dropdown',
@@ -86,15 +82,33 @@ app.layout = html.Div(children=[
 
     html.Br(),
 
-    dcc.Slider(id = 'year_slider', value = 1960, min = 1960, max = 2019, step = 1, marks = None, tooltip = { 'placement':'bottom', 'always_visible':True}),
+    dcc.Slider(id = 'year_slider', value = 1960, min = 1960, max = 2019, step = 1, marks = None, tooltip = { 'placement':'bottom'}),#, 'always_visible':True}),
+    ]),
 
+    ]),
+    
+    html.Br(),
+
+    html.Div(id = 'chart_container', children = [
+    
+    html.Div(id = 'line_container', children = [
+    
     dcc.Graph(
-        id= 'geo_chart'
+        id = 'line_chart',
+    )
+    ]),
+
+    html.Div(id = 'map_container', children = [
+     
+    dcc.Graph(
+        id = 'geo_chart'
     )
     ])
+   
+
+    ])
     ])
 
-])
 
 @app.callback(
     Output(component_id = 'line_chart', component_property = 'figure'),
@@ -108,9 +122,23 @@ def update_state(selected_state,selected_resources):
     data = cur1.fetchall()
     j = json.dumps(data)
     l = json.loads(j)
-    df = pd.DataFrame(l,columns = ['row','state_id','year','resource_id','population','consumption'])
+    df = pd.DataFrame(l, columns = ['row','state_id','year','resource_id','population','consumption'])
     criterion = df['resource_id'].map(lambda x: x in selected_resources)
-    fig = px.line(df.loc[criterion], x = "year", y = "consumption", color = "resource_id",line_group = "resource_id")
+    fig = px.line(
+        df.loc[criterion], 
+        x = 'year', 
+        y = 'consumption', 
+        color = 'resource_id', 
+        line_group = 'resource_id', 
+        labels = {'year' : 'Year', 'consumption' : 'Consumption (BTU)'})
+
+    fig.update_layout(
+        legend_title = 'Resources'
+    )
+    num_selected = len(selected_resources)
+    for i, name in enumerate(resource_names[0:num_selected]):       
+        fig.data[i].name = name
+    
     return fig
 
 @app.callback(
@@ -138,7 +166,7 @@ def update_map(resource, year):
         text = state_data['state']
     ))
     fig.update_layout(
-        geo_scope = 'usa'
+        geo_scope = 'usa',
     )
     return fig
 

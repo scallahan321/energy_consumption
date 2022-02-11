@@ -1,9 +1,69 @@
+body {
+    background-color: #f6f7fa;
+}
+
 input {
     border:1px solid black;
     box-shadow: 0 0 1px #295585;
 }
 
+#input_container {
+    display : grid;
+    grid-template-columns : 50% 50%;
+} 
+
+#line_input {
+    grid-column: 1 / 2;
+    grid-row: 1;
+}
+
+#map_input {
+    grid-column: 2/2;
+    grid-row: 1;
+}
+
+#resource_checklist {
+    width: 90%;
+    margin: auto;
+}
+
+#year_slider {
+    width: 90%;
+    margin: auto;
+}
+
 .drop {
-    width:96%;
+    width:90%;
     margin:auto;
 }
+
+#chart_container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+#line_container {
+    grid-column: 1/2;
+    grid-row: 1;
+}
+
+#map_container {
+    grid-column: 2/2;
+    grid-row: 1;
+}
+
+#line_chart {
+    margin : auto;
+    width: 90%;
+    border-radius : 10px;
+    box-shadow : 2px 2px 2px 2px lightgray;
+}
+
+#geo_chart {
+    margin : auto;
+    width: 90%;
+    border-radius : 10px;
+    box-shadow : 2px 2px 2px 2px lightgray;
+    /*bottom : 10px;*/
+}
+    
