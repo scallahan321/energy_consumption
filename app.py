@@ -14,7 +14,7 @@ import json
 db = os.environ.get('DB')
 db_user = os.environ.get('DB_USERNAME')
 db_password = os.environ.get("DB_PASSWORD")
-db_ssl = os.environ.get("DB_SSL")
+#db_ssl = os.environ.get("DB_SSL")
 
 #load state data csv for state names, abbreviations, and area in sq miles
 state_data = pd.read_csv("state_data.csv")
@@ -27,8 +27,8 @@ conn1 = pymysql.connect(
         host = db,
         user = db_user, 
         password = db_password,
-        db = 'energy',
-        ssl_ca = db_ssl
+        db = 'energy'
+       # ssl_ca = db_ssl
         )
 cur1 = conn1.cursor()
 
