@@ -11,6 +11,8 @@ import json
 
 load_dotenv() #--only need this for local environment
 
+#TESTING
+
 db = os.environ.get('DB')
 db_user = os.environ.get('DB_USERNAME')
 db_password = os.environ.get("DB_PASSWORD")
