@@ -49,15 +49,11 @@ colors = {
 app = dash.Dash(__name__ , meta_tags=[{"name":"viewport","content":"width=device-width","initial-scale":"1"}])
 server = app.server
         
-
 app.layout = html.Div(children=[
     html.H1(style = {'text-align':'center'}, children = 'Energy Consumption'),
-
     html.Br(),
     html.Br(),
-
     html.Div(id = 'input_container', children = [
-
     html.Div(id = 'line_input', children = [
     
     dcc.Dropdown(
@@ -76,21 +72,17 @@ app.layout = html.Div(children=[
     ]),
 
     html.Div(id = 'map_input', children = [
-        
     dcc.Dropdown(
         id = 'map_dropdown',
         className = 'drop',
         options = [{'label': i,'value':j} for i, j in zip(resource_names, resource_abrevs)],
         value = 'CL'
     ),
-
     html.Br(),
 
-    dcc.Slider(id = 'year_slider', value = 1960, min = 1960, max = 2019, step = 1, marks = None, tooltip = { 'placement':'bottom'}),#, 'always_visible':True}),
+    dcc.Slider(id = 'year_slider', value = 1960, min = 1960, max = 2019, step = 1, marks = None, tooltip = { 'placement':'bottom'}),
     ]),
-
     ]),
-    
     html.Br(),
 
     html.Div(id = 'chart_container', children = [
@@ -108,11 +100,8 @@ app.layout = html.Div(children=[
         id = 'geo_chart'
     )
     ])
-   
-
     ])
     ])
-
 
 @app.callback(
     Output(component_id = 'line_chart', component_property = 'figure'),
@@ -142,8 +131,8 @@ def update_state(selected_state,selected_resources):
     num_selected = len(selected_resources)
     for i, name in enumerate(resource_names[0:num_selected]):       
         fig.data[i].name = name
-    
     return fig
+
 
 @app.callback(
     Output(component_id ='geo_chart', component_property = 'figure'),
